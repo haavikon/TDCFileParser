@@ -20,12 +20,16 @@ Parser::Parser(string _Directory, string _OutputFileName)
 	if (this->dirExists)
 	{
 		const char *rootFileName = opFilename.c_str();
-		cout << rootFileName << endl; 
-		cin.get();
+		//cout << rootFileName << endl; 
+		//cin.get();
 		hfile = TFile::Open(opFilename.c_str(), "RECREATE");
+		noOfFiles = files.size();
 		for each(string s in files)
 		{
+			progress = (fileNumber / noOfFiles)* 100.0;
+			cout <<  progress << "% \r";
 			ProcessFile(s);
+			fileNumber++;
 		}
 		tree->Print();
 		tree->Write();
@@ -52,7 +56,7 @@ void Parser::ReadFiles()
 	else
 	{
 		cout << "Directory does not exist, exiting" << endl;
-		//exit(1);
+		exit(1);
 	}
 
 	closedir(dir);
@@ -62,14 +66,18 @@ void Parser::ProcessFile(string _filename)
 {
 	string line;
 	ANUFilename thisFile(_filename);
-	uint16_t rawData;
-	string buffer;
+	uint16_t rawData, rawData2;
+	string buffer, buffer2;
+	
 	if (thisFile.isANUFile)
 	{
-		if (!thisFile.isBFile)
+		if (thisFile.isBFile)
 		{
+			//cout << noOfFiles << endl;
 			ifstream inputFileStream(directory + "\\" + _filename);
-			cout << _filename << endl;
+			
+			//cout << _filename << endl;
+
 			while (getline(inputFileStream, line)) {
 				stringstream ss(line);
 				while (getline(ss, buffer, '\t'))
@@ -84,10 +92,16 @@ void Parser::ProcessFile(string _filename)
 								groupNumber++;
 							else
 							{
+								getline(ss, buffer2, '\t');
+								rawData2 = (uint16_t)stoi(buffer2);
+								TDCWord tempWord2(rawData2);
 								//Put the groupnumber, channel and time in tree;
 								channel = tempWord.channel;
-								time = tempWord.time;
+								time = tempWord.time + tempWord2.time;
 								tree->Fill();
+								//cout << groupNumber << " " << channel << " " << time << endl;
+								//cout << tempWord.channel << ":" << tempWord.time << " ISLSB = " << tempWord.isLSB << endl;
+								//cout << tempWord2.channel << ":" << tempWord2.time << " ISLSB = " << tempWord2.isLSB << endl;
 							}
 						}
 					}

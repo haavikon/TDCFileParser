@@ -3,21 +3,21 @@ using namespace std;
 
 TDCWord::TDCWord(uint16_t _word)
 {
-	uint16_t mask; 
+	uint16_t mask;
 	word = _word;
-	isHeader = false; 
-	isLSB = true; 
-	isLeadingEdge = false; 
-	isLeadingEdgeRecording = false; 
-	isDoubleWord = false; 
-	
+	isHeader = false;
+	isLSB = true;
+	isLeadingEdge = false;
+	isLeadingEdgeRecording = false;
+	isDoubleWord = false;
+
 	mask = 32768;
 	if ((word&mask) == mask)
-		isHeader = true; 
+		isHeader = true;
 
 	mask = 256;
 	if ((word&mask) == mask)
-		isHeader = false;
+		isLSB = false;
 
 	mask = 512;
 	if ((word&mask) == 0)
@@ -29,16 +29,20 @@ TDCWord::TDCWord(uint16_t _word)
 
 	mask = 16384;
 	if ((word&mask) == mask)
-		isDoubleWord = true; 
+		isDoubleWord = true;
 
 	mask = 31744;
 	channel = (int)((mask&word) >> 10);
 
 	mask = 255;
 	if (isLSB)
-		time = (int)(mask*word);
+	{
+		time = (int)(mask&word);
+	}
 	else
-		time = (int)((mask*word)<<8);
+	{
+		time = (int)((mask&word) << 8);
+	}
 
 	mask = 255;
 	moduleID = (int)(mask&word);

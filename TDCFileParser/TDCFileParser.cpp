@@ -17,9 +17,8 @@ int main(int argc, char *argv[])
 	{
 		string _directory, _filename; 
 		_directory = (string)argv[1];
-		_filename = (string)argv[1] + (string)argv[2];
-		//Parser thisParser(_directory, _filename);
-		cout << _directory << " " << _filename << endl;
+		_filename = (string)argv[1] + "\\"+ (string)argv[2];
+		Parser thisParser(_directory, _filename);
 		return 0;
 	}
 }

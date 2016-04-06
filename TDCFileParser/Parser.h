@@ -31,4 +31,7 @@ private:
 	int channel; 
 	int time; 
 	FILE *fp;
+	double noOfFiles=0;
+	double progress=0; 
+	double fileNumber=0; 
 };
